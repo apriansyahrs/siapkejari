@@ -28,11 +28,15 @@ class HolidayRepository
 
     public function create($data)
     {
+        $data['date'] = \Carbon\Carbon::createFromFormat('d-m-Y', $data['date'])->format('Y-m-d');
+
         Holiday::create($data);
     }
 
     public function update($id, $data)
     {
+        $data['date'] = \Carbon\Carbon::createFromFormat('d-m-Y', $data['date'])->format('Y-m-d');
+
         $this->getById($id)->update($data);
     }
 
