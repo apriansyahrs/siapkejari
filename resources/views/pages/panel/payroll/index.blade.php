@@ -454,13 +454,14 @@
     };
 
     const getEmployee = async (username) => {
-        const csrfToken = '{{ csrf_token() }}';
+        const period = periodInput.value;
         const options = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
+            body: JSON.stringify({ period })
         };
         const response = await fetch(`${window.location.origin}/panel/payroll/hitung/${username}`, options);
         const result = await response.json();
@@ -534,5 +535,36 @@
         const result = await response.json();
         return result;
     }
+
+const calculateAttendanceDeduction = async (employeeId) => {
+    const period = periodInput.value;
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({ period })
+    };
+    const response = await fetch(`${window.location.origin}/panel/payroll/calculate-attendance/${employeeId}`, options);
+    const result = await response.json();
+    return result;
+};
+
+periodInput.addEventListener('change', async () => {
+    if (employeeInput.value) {
+        const attendanceResponse = await calculateAttendanceDeduction(employeeInput.value);
+        if (attendanceResponse.status === 'success') {
+            document.querySelector('input[name="attendance-deduction"]').value = attendanceResponse.data.attendance_deduction;
+            // Update total deduction and net salary
+            const totalDeduction = parseFloat(pph21DeductionInput.value) +
+                                parseFloat(healthInsuranceContributionInput.value) +
+                                parseFloat(otherFamilyHealthInsuranceContributionInput.value) +
+                                parseFloat(attendanceResponse.data.attendance_deduction);
+            totalDeductionInput.value = totalDeduction;
+            netSalaryInput.value = parseFloat(salaryInput.value) - totalDeduction;
+        }
+    }
+});
 </script>
 @endpush

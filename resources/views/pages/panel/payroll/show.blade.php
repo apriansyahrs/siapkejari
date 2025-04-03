@@ -64,6 +64,10 @@
                                     <p class="mb-0">Rp. {{ number_format($payroll->other_family_health_insurance_contribution, 0, '', ',') }} ({{ $payroll->marital_status === 'Kawin' ? $payroll->other_family_health_insurance + 1 : $payroll->other_family_health_insurance }} orang)</p>
                                 </div>
                                 <div class="col-6 mb-3">
+                                    <label class="form-label mb-0">Potongan Absen & Terlambat</label>
+                                    <p class="mb-0">Rp. {{ number_format($payroll->attendance_deduction, 0, '', ',') }}</p>
+                                </div>
+                                <div class="col-6 mb-3">
                                     <label class="form-label mb-0">Total Potongan</label>
                                     <p class="mb-0">Rp. {{ number_format($payroll->total_deduction, 0, '', ',') }}</p>
                                 </div>
@@ -72,12 +76,12 @@
                                     <p class="mb-0">Rp. {{ number_format($payroll->net_salary, 0, '', ',') }}</p>
                                 </div>
                                 <div class="col-6 mb-3">
-                                    <label class="form-label mb-0">No. Rekening</label>
-                                    <p class="mb-0">{{ $payroll->account_number }}</p>
-                                </div>
-                                <div class="col-6 mb-3">
                                     <label class="form-label mb-0">Tgl. Pembayaran</label>
                                     <p class="mb-0">{{ \Carbon\Carbon::parse($payroll->payment_date)->translatedFormat('d F Y') }}</p>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label mb-0">No. Rekening</label>
+                                    <p class="mb-0">{{ $payroll->account_number }}</p>
                                 </div>
                             </div>
                         </div>

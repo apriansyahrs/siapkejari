@@ -204,12 +204,15 @@ class PayrollController extends Controller
         }
 
         $otherFamilyHealthInsuranceContribution = $healthInsuranceContribution * $otherFamilyHealthInsurance;
+        $period = request()->period ? Carbon::parse('01-'.request()->period)->format('Y-m-d') : date('Y-m-01');
+        $attendanceDeduction = $this->payrollRepository->calculateAttendanceDeduction($employeeId, Carbon::parse($period), $employee->position->salary);
         $totalDeduction = $pph21Deduction + $healthInsuranceContribution + $otherFamilyHealthInsuranceContribution;
         $netSalary = $employee->position->salary - $totalDeduction;
         $data = [
             'allowance_pph_21' => 0,
             'deduction_pph_21' => $pph21Deduction,
             'salary' => $employee->position->salary,
+            'attendance_deduction' => $attendanceDeduction,
             'total_deduction' =>  $totalDeduction,
             'net_salary' => $netSalary,
             'employment_contract' => $employee->employment_contract,
