@@ -118,6 +118,12 @@
             <td style="text-align: right">Rp. {{ number_format($payroll->pph_21_deduction, 0, '', ',') }}</td>
         </tr>
         <tr>
+            <td></td>
+            <td></td>
+            <td>Potongan Absensi</td>
+            <td style="text-align: right">Rp. {{ number_format($payroll->attendance_deduction, 0, '', ',') }}</td>
+        </tr>
+        <tr>
             <td><strong>Total Penghasilan</strong></td>
             <td style="text-align: right"><strong>Rp. {{ number_format($payroll->salary, 0, '', ',') }}</strong></td>
             <td><strong>Total Potongan</strong></td>
