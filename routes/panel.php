@@ -46,6 +46,7 @@ Route::middleware(['auth:web'])->group(function () {
         Route::post('/{id}/unduh', [PayrollController::class, 'download'])->name('payroll.download');
         Route::post('/generate', [PayrollController::class, 'generate'])->name('payroll.generate');
         Route::post('/hitung/{employeeId}', [PayrollController::class, 'calculate'])->name('payroll.calculate');
+        Route::post('/rekap', [PayrollController::class, 'report'])->name('payroll.report');
     });
     Route::prefix('jam-kerja')->group(function () {
         Route::get('/', [WorkingHourController::class, 'index'])->name('working-hour');

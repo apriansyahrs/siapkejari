@@ -230,4 +230,48 @@ class PayrollController extends Controller
 
         return $data;
     }
+
+    public function report(Request $request)
+    {
+        $request->validate([
+            'monthly_report_period' => 'required|string|max:7'
+        ]);
+
+        try {
+            $periodDate = Carbon::parse('01-' . $request->monthly_report_period);
+            $period = $periodDate->format('Y-m-d');
+
+            $payrolls = $this->payrollRepository->getByPeriod($period);
+
+            if ($payrolls->isEmpty()) {
+                Session::flash('toast-status', 'error');
+                Session::flash('toast-title', 'Error');
+                Session::flash('toast-text', 'Tidak ada data payroll untuk periode yang dipilih');
+                return redirect()->back();
+            }
+
+            $totalSalary = $payrolls->sum('net_salary');
+
+            $data = [
+                'payrolls' => $payrolls,
+                'totalSalary' => $totalSalary,
+                'month' => $periodDate->translatedFormat('F'),
+                'year' => $periodDate->format('Y')
+            ];
+
+            $pdf = Pdf::loadView('printed.payroll.multiple', $data);
+
+            $filename = 'Rekap Gaji Pegawai - ' . $periodDate->translatedFormat('F_Y') . '.pdf';
+
+            $pdf->setPaper('A4', 'landscape');
+
+            return $pdf->download($filename);
+
+        } catch (\Exception $e) {
+            Session::flash('toast-status', 'error');
+            Session::flash('toast-title', 'Error');
+            Session::flash('toast-text', 'Terjadi kesalahan saat membuat rekap: ' . $e->getMessage());
+            return redirect()->back();
+        }
+    }
 }

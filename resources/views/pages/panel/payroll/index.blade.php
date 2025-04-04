@@ -31,6 +31,19 @@
                     </div>
                     <div class="col-auto ms-auto d-print-none">
                         <div class="btn-list">
+                            <a href="#" class="btn bg-transparent border border-secondary text-dark"
+                                data-bs-toggle="modal" data-bs-target="#monthly-report-modal">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-report"
+                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M17 17m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+                                    <path d="M17 13v4h4" />
+                                    <path d="M12 3v4a1 1 0 0 0 1 1h4" />
+                                    <path d="M11.5 21h-6.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v2m0 3v4" />
+                                </svg>
+                                Rekap Bulanan
+                            </a>
                             <div class="dropstart">
                                 <a href="#" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="dropdown"
                                     aria-expanded="false">
@@ -281,6 +294,42 @@
                         Simpan
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-blur fade" id="monthly-report-modal" tabindex="-1" role="dialog" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Rekap Bulanan Payroll</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('panel.payroll.report') }}" method="post">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Periode</label>
+                            <input type="text" class="form-control" name="monthly_report_period" maxlength="7"
+                                placeholder="MM-YYYY" autocomplete="off" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary ms-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                <path d="M9 17h6" />
+                                <path d="M9 13h6" />
+                            </svg>
+                            Cetak Rekap
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -677,5 +726,16 @@
             const result = await response.json();
             return result;
         }
+
+        // Monthly report period datepicker
+        const monthlyReportPeriodInput = document.querySelector('input[name="monthly_report_period"]');
+
+        new Datepicker(monthlyReportPeriodInput, {
+            autohide: true,
+            format: 'mm-yyyy',
+            maxView: 1,
+            pickLevel: 1,
+            maxDate: new Date(),
+        });
     </script>
 @endpush
