@@ -75,8 +75,7 @@
                 <th>Tunjangan PPH 21</th>
                 <th>Potongan PPH 21</th>
                 <th>Potongan Absensi</th>
-                <th>Iuran Jamkes</th>
-                <th>Iuran Jamkes Kel. Lainnya</th>
+                <th>Iuran BPJS Kesehatan</th>
                 <th>Gaji Bersih</th>
             </tr>
         </thead>
@@ -90,8 +89,7 @@
                 <td style="text-align: right">Rp. {{ number_format($payroll->pph_21_allowance, 0, '', ',') }}</td>
                 <td style="text-align: right">Rp. {{ number_format($payroll->pph_21_deduction, 0, '', ',') }}</td>
                 <td style="text-align: right">Rp. {{ number_format($payroll->attendance_deduction, 0, '', ',') }}</td>
-                <td style="text-align: right">Rp. {{ number_format($payroll->health_insurance_contribution, 0, '', ',') }}</td>
-                <td style="text-align: right">Rp. {{ number_format($payroll->other_family_health_insurance_contribution, 0, '', ',') }}</td>
+                <td style="text-align: right">Rp. {{ number_format($payroll->health_insurance_contribution + $payroll->other_family_health_insurance_contribution, 0, '', ',') }}</td>
                 <td style="text-align: right">Rp. {{ number_format($payroll->net_salary, 0, '', ',') }}</td>
             </tr>
             @endforeach
