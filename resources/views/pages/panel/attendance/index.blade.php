@@ -80,6 +80,7 @@
                                         <th>Jam Masuk</th>
                                         <th>Jam Keluar</th>
                                         <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -101,6 +102,12 @@
                                             @endif
                                         </td>
                                         <td>{{ $item->status }}</td>
+                                        <td>
+                                            <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-{{ $item->id }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                                                Ubah
+                                            </a>
+                                        </td>
                                     </tr>
                                     @endforeach
                                     @else
@@ -149,12 +156,28 @@
                         <option value="Sakit">Sakit</option>
                         <option value="Cuti">Cuti</option>
                         <option value="Tanpa Keterangan">Tanpa Keterangan</option>
+                        <option value="Hadir">Hadir</option>
                     </select>
                     <div class="invalid-feedback"></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Keterangan <small>(opsional)</small></label>
                     <input type="text" class="form-control" name="note">
+                    <div class="invalid-feedback"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tanggal Presensi</label>
+                    <input type="date" class="form-control" name="checkin_date">
+                    <div class="invalid-feedback"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Checkin Time</label>
+                    <input type="time" class="form-control" name="checkin_time">
+                    <div class="invalid-feedback"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Checkout Time</label>
+                    <input type="time" class="form-control" name="checkout_time">
                     <div class="invalid-feedback"></div>
                 </div>
             </div>
@@ -231,6 +254,9 @@
     const employeeInput = document.querySelector('select[name="employee"]');
     const statusInput = document.querySelector('select[name="status"]');
     const noteInput = document.querySelector('input[name="note"]');
+    const checkinDateInput = document.querySelector('input[name="checkin_date"]');
+    const checkinTimeInput = document.querySelector('input[name="checkin_time"]');
+    const checkoutTimeInput = document.querySelector('input[name="checkout_time"]');
     const saveButton = document.getElementById('save');
     const closeButton = document.querySelector('button.btn-close');
     const employeeReportInput = document.querySelector('select[name="employee-report"]');
@@ -277,6 +303,9 @@
         employeeInput.setAttribute('disabled', '');
         statusInput.setAttribute('disabled', '');
         noteInput.setAttribute('disabled', '');
+        checkinDateInput.setAttribute('disabled', '');
+        checkinTimeInput.setAttribute('disabled', '');
+        checkoutTimeInput.setAttribute('disabled', '');
         saveButton.setAttribute('disabled', '');
         closeButton.setAttribute('disabled', '');
         saveButton.innerHTML = `${spinnerIcon} Loading`;
@@ -286,6 +315,9 @@
         employeeInput.removeAttribute('disabled');
         statusInput.removeAttribute('disabled');
         noteInput.removeAttribute('disabled');
+        checkinDateInput.removeAttribute('disabled');
+        checkinTimeInput.removeAttribute('disabled');
+        checkoutTimeInput.removeAttribute('disabled');
         saveButton.removeAttribute('disabled');
         closeButton.removeAttribute('disabled');
         saveButton.innerHTML = `${plusIcon} Simpan`;
@@ -304,6 +336,18 @@
             noteInput.classList.add('is-invalid');
             noteInput.nextElementSibling.textContent = errors.note[0];
         }
+        if (errors.checkin_date) {
+            checkinDateInput.classList.add('is-invalid');
+            checkinDateInput.nextElementSibling.textContent = errors.checkin_date[0];
+        }
+        if (errors.checkin_time) {
+            checkinTimeInput.classList.add('is-invalid');
+            checkinTimeInput.nextElementSibling.textContent = errors.checkin_time[0];
+        }
+        if (errors.checkout_time) {
+            checkoutTimeInput.classList.add('is-invalid');
+            checkoutTimeInput.nextElementSibling.textContent = errors.checkout_time[0];
+        }
     };
 
     const clearErrors = () => {
@@ -313,6 +357,12 @@
         statusInput.nextElementSibling.textContent = '';
         noteInput.classList.remove('is-invalid');
         noteInput.nextElementSibling.textContent = '';
+        checkinDateInput.classList.remove('is-invalid');
+        checkinDateInput.nextElementSibling.textContent = '';
+        checkinTimeInput.classList.remove('is-invalid');
+        checkinTimeInput.nextElementSibling.textContent = '';
+        checkoutTimeInput.classList.remove('is-invalid');
+        checkoutTimeInput.nextElementSibling.textContent = '';
     };
 
     const save = async () => {
@@ -320,6 +370,9 @@
             employee_id: employeeInput.value,
             status: statusInput.value,
             note: noteInput.value,
+            checkin_date: checkinDateInput.value,
+            checkin_time: checkinTimeInput.value,
+            checkout_time: checkoutTimeInput.value
         };
 
         const encodedBody = new URLSearchParams(body);
@@ -399,8 +452,9 @@
             result = await responseClone.json();
         } else {
             const contentDisposition = await response.headers.get('Content-Disposition');
-            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-            const filename = filenameMatch[1].replace(/['"]/g, '');
+            const filenameMatch = contentDisposition.match(/filename[^;=
+        */);
+            const filename = filenameMatch[1].replace(/['"]/, '');
             const link = document.createElement('a');
             const downloadUrl = window.URL.createObjectURL(blob);
             link.href = downloadUrl;
@@ -419,5 +473,125 @@
 
         return result;
     }
+
+    // Add event listeners for all update buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.update-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+            const id = this.getAttribute('data-id');
+            const checkinTimeInput = document.querySelector(`input[name="edit_checkin_time_${id}"]`);
+            const checkoutTimeInput = document.querySelector(`input[name="edit_checkout_time_${id}"]`);
+            const updateButton = document.getElementById(`update-${id}`);
+            const closeButton = this.closest('.modal').querySelector('button.btn-close');
+
+            // Disable elements during update
+            const disableEditElements = () => {
+                checkinTimeInput.setAttribute('disabled', '');
+                checkoutTimeInput.setAttribute('disabled', '');
+                updateButton.setAttribute('disabled', '');
+                closeButton.setAttribute('disabled', '');
+                updateButton.innerHTML = `${spinnerIcon} Loading`;
+            };
+
+            // Enable elements after update
+            const enableEditElements = () => {
+                checkinTimeInput.removeAttribute('disabled');
+                checkoutTimeInput.removeAttribute('disabled');
+                updateButton.removeAttribute('disabled');
+                closeButton.removeAttribute('disabled');
+                updateButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg> Simpan`;
+            };
+
+            // Clear error messages
+            const clearEditErrors = () => {
+                checkinTimeInput.classList.remove('is-invalid');
+                checkinTimeInput.nextElementSibling.textContent = '';
+                checkoutTimeInput.classList.remove('is-invalid');
+                checkoutTimeInput.nextElementSibling.textContent = '';
+            };
+
+            // Show error messages
+            const showEditErrors = (errors) => {
+                if (errors.checkin_time) {
+                    checkinTimeInput.classList.add('is-invalid');
+                    checkinTimeInput.nextElementSibling.textContent = errors.checkin_time[0];
+                }
+                if (errors.checkout_time) {
+                    checkoutTimeInput.classList.add('is-invalid');
+                    checkoutTimeInput.nextElementSibling.textContent = errors.checkout_time[0];
+                }
+            };
+
+            // Update attendance record
+            const updateAttendance = async () => {
+                const body = {
+                    checkin_time: checkinTimeInput.value,
+                    checkout_time: checkoutTimeInput.value
+                };
+
+                const encodedBody = new URLSearchParams(body);
+                const options = {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: encodedBody,
+                };
+
+                const response = await fetch(`${window.location.origin}/panel/presensi/${id}`, options);
+                const result = await response.json();
+                return result;
+            };
+
+            // Main update process
+            disableEditElements();
+            clearEditErrors();
+
+            const response = await updateAttendance();
+
+            if (response.status === 'success') {
+                return location.reload();
+            }
+
+            if (response.errors) {
+                showEditErrors(response.errors);
+            }
+
+            enableEditElements();
+        });
+    });
+});
 </script>
 @endpush
+
+@foreach ($attendances as $item)
+<div class="modal modal-blur fade" id="modal-edit-{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Presensi - {{ $item->employee->name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Jam Masuk</label>
+                    <input type="time" class="form-control" name="edit_checkin_time_{{ $item->id }}" value="{{ $item->checkin_time !== '00:00:00' ? \Carbon\Carbon::parse($item->checkin_time)->format('H:i') : '' }}">
+                    <div class="invalid-feedback"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Jam Keluar</label>
+                    <input type="time" class="form-control" name="edit_checkout_time_{{ $item->id }}" value="{{ !in_array($item->checkout_time, ['00:00:00', null]) ? \Carbon\Carbon::parse($item->checkout_time)->format('H:i') : '' }}">
+                    <div class="invalid-feedback"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="update-{{ $item->id }}" type="button" class="btn btn-primary ms-auto update-btn" data-id="{{ $item->id }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                    Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReportAttendanceRequest;
 use App\Http\Requests\StoreAttendanceRequest;
+use App\Http\Requests\UpdateAttendanceRequest;
 use App\Repositories\AttendanceRepository;
 use App\Repositories\EmployeeRepository;
 use App\Repositories\HolidayRepository;
@@ -52,11 +53,20 @@ class AttendanceController extends Controller
 
     public function store(StoreAttendanceRequest $request)
     {
-        $payload = $request->only(['employee_id', 'status', 'note']);
-        $payload['checkin_date'] = date('Y-m-d');
-        $payload['checkin_time'] = '00:00:00';
-        $payload['checkout_date'] = date('Y-m-d');
-        $payload['checkout_time'] = '00:00:00';
+        $payload = $request->only(['employee_id', 'status', 'note', 'checkin_date', 'checkin_time', 'checkout_time']);
+
+        // Use the provided checkin_date or default to today
+        $payload['checkin_date'] = $payload['checkin_date'] ?? date('Y-m-d');
+
+        // Use the provided checkin_time or default to 00:00:00
+        $payload['checkin_time'] = $payload['checkin_time'] ?? '00:00:00';
+
+        // Set checkout_date to the same as checkin_date
+        $payload['checkout_date'] = $payload['checkin_date'];
+
+        // Use the provided checkout_time or default to 00:00:00
+        $payload['checkout_time'] = $payload['checkout_time'] ?? '00:00:00';
+
         $this->attendanceRepository->create($payload);
         Session::flash('toast-status', 'success');
         Session::flash('toast-title', 'Sukses');
@@ -196,5 +206,31 @@ class AttendanceController extends Controller
             'stream' => $pdf->stream($filename),
             'filename' => $filename
         ];
+    }
+
+    public function update($id, UpdateAttendanceRequest $request)
+    {
+dd($request);
+        $attendance = $this->attendanceRepository->getById($id);
+
+        if (!$attendance) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Presensi tidak ditemukan'
+            ], 404);
+        }
+
+        $payload = $request->only(['checkin_time', 'checkout_time']);
+
+        // Update the attendance record
+        $attendance->update($payload);
+
+        Session::flash('toast-status', 'success');
+        Session::flash('toast-title', 'Sukses');
+        Session::flash('toast-text', 'Presensi berhasil diperbarui');
+
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }

@@ -37,6 +37,7 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/', [AttendanceController::class, 'index'])->name('attendance');
         Route::get('/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
         Route::post('/', [AttendanceController::class, 'store'])->name('attendance.store');
+        Route::put('/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
         Route::post('/rekap', [AttendanceController::class, 'report'])->name('attendance.report');
     });
     Route::prefix('payroll')->group(function () {

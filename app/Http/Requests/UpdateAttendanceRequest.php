@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreAttendanceRequest extends FormRequest
+class UpdateAttendanceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,18 +24,16 @@ class StoreAttendanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => 'required',
-            'status' => 'required',
-            'checkin_date' => 'nullable|date',
-            'checkin_time' => 'nullable',
-            'checkout_time' => 'nullable',
+            'checkin_time' => 'required|date_format:H:i',
+            'checkout_time' => 'required|date_format:H:i',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'required' => 'wajib diisi.'
+            'required' => 'wajib diisi.',
+            'date_format' => 'format tidak valid.'
         ];
     }
 
