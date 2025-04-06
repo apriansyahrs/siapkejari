@@ -210,7 +210,7 @@ class AttendanceController extends Controller
 
     public function update($id, UpdateAttendanceRequest $request)
     {
-        dd($request);
+        // dd($request);
         $attendance = $this->attendanceRepository->getById($id);
 
         if (!$attendance) {

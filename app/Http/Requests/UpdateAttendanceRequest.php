@@ -25,7 +25,7 @@ class UpdateAttendanceRequest extends FormRequest
     {
         return [
             'checkin_time' => 'required|date_format:H:i',
-            'checkout_time' => 'required|date_format:H:i',
+            'checkout_time' => 'nullable|date_format:H:i',
         ];
     }
 
