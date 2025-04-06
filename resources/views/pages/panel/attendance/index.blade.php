@@ -452,8 +452,7 @@
             result = await responseClone.json();
         } else {
             const contentDisposition = await response.headers.get('Content-Disposition');
-            const filenameMatch = contentDisposition.match(/filename[^;=
-        */);
+            const filenameMatch = contentDisposition.match(/filename[^;=]*/);
             const filename = filenameMatch[1].replace(/['"]/, '');
             const link = document.createElement('a');
             const downloadUrl = window.URL.createObjectURL(blob);

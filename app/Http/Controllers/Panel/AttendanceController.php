@@ -34,7 +34,7 @@ class AttendanceController extends Controller
     {
         $date = request()->date ? Carbon::parse(request()->date)->format('Y-m-d') : date('Y-m-d');
         $attendances = $this->attendanceRepository->getByCheckinDateWithPagination($date, 10);
-        $employees= $this->employeeRepository->getActive();
+        $employees = $this->employeeRepository->getActive();
         $title = 'Presensi';
         return view('pages.panel.attendance.index', compact('title', 'attendances', 'employees', 'date'));
     }
@@ -91,7 +91,7 @@ class AttendanceController extends Controller
             echo $document['stream'];
         }, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$document['filename'].'"',
+            'Content-Disposition' => 'inline; filename="' . $document['filename'] . '"',
         ]);
     }
 
@@ -100,7 +100,7 @@ class AttendanceController extends Controller
         $periodSplit = explode('-', $period);
         $month = $periodSplit[0];
         $year = $periodSplit[1];
-        $endOfMonth = Carbon::parse('01-'.$period)->endOfMonth()->day;
+        $endOfMonth = Carbon::parse('01-' . $period)->endOfMonth()->day;
         $attendances = $this->attendanceRepository->getByEmployeeIdAndCheckinPeriod($employeeId, $year, $month);
         $holidays = $this->holidayRepository->getByPeriod($year, $month);
         $holidaysArray = [];
@@ -135,10 +135,10 @@ class AttendanceController extends Controller
 
         for ($i = 1; $i <= $endOfMonth; $i++) {
             $dateString = strval($i);
-            $day = Carbon::parse($dateString.'-'.$period)->format('D');
+            $day = Carbon::parse($dateString . '-' . $period)->format('D');
 
             if (in_array($day, ['Sat', 'Sun'])) {
-                $date = Carbon::parse($dateString.'-'.$period)->format('Y-m-d');
+                $date = Carbon::parse($dateString . '-' . $period)->format('Y-m-d');
                 if (!in_array($date, $holidaysArray)) {
                     $weekday = (object) [
                         'checkin_date' => $date,
@@ -170,7 +170,7 @@ class AttendanceController extends Controller
         $remainingMinutes = $totalWorkingHour % 60;
         $timeFormatted = "{$hour} Jam {$remainingMinutes} Menit";
         $employee = $this->employeeRepository->getById($employeeId);
-        $filename = 'Rekap Presensi - '.$employee->name.'_'.Carbon::parse('01-'.$period)->translatedFormat('F Y').'.pdf';
+        $filename = 'Rekap Presensi - ' . $employee->name . '_' . Carbon::parse('01-' . $period)->translatedFormat('F Y') . '.pdf';
         $data = [
             'attendances' => $attendancesArray,
             'employee' => $employee,
@@ -199,7 +199,7 @@ class AttendanceController extends Controller
         $month = $periodSplit[0];
         $year = $periodSplit[1];
         $attendances = $this->attendanceRepository->getAttendanceRecap($year, $month);
-        $filename = 'Rekap Presensi - '.Carbon::parse('01-'.$period)->translatedFormat('F Y').'.pdf';
+        $filename = 'Rekap Presensi - ' . Carbon::parse('01-' . $period)->translatedFormat('F Y') . '.pdf';
         $pdf = Pdf::loadView('printed.attendance.multiple', ['attendances' => $attendances, 'period' => $period]);
         $pdf->setPaper('A4');
         return [
@@ -210,7 +210,7 @@ class AttendanceController extends Controller
 
     public function update($id, UpdateAttendanceRequest $request)
     {
-dd($request);
+        dd($request);
         $attendance = $this->attendanceRepository->getById($id);
 
         if (!$attendance) {
