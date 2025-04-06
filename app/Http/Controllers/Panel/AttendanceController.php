@@ -222,6 +222,36 @@ class AttendanceController extends Controller
 
         $payload = $request->only(['checkin_time', 'checkout_time']);
 
+        // Calculate checkin_late based on optimal work start time (08:00)
+        if (isset($payload['checkin_time'])) {
+            $optimalStartTime = '08:00';
+            $checkinTime = $payload['checkin_time'];
+            
+            // If checkin time is 08:00 or earlier, set checkin_late to null
+            if (strtotime($checkinTime) <= strtotime($optimalStartTime)) {
+                $payload['checkin_late'] = null;
+            } else {
+                // Calculate late minutes
+                $lateMinutes = (strtotime($checkinTime) - strtotime($optimalStartTime)) / 60;
+                $payload['checkin_late'] = $lateMinutes;
+            }
+        }
+
+        // Calculate checkout_early based on optimal work end time (16:00)
+        if (isset($payload['checkout_time'])) {
+            $optimalEndTime = '16:00';
+            $checkoutTime = $payload['checkout_time'];
+            
+            // If checkout time is 16:00 or later, set checkout_early to null
+            if (strtotime($checkoutTime) >= strtotime($optimalEndTime)) {
+                $payload['checkout_early'] = null;
+            } else {
+                // Calculate early minutes
+                $earlyMinutes = (strtotime($optimalEndTime) - strtotime($checkoutTime)) / 60;
+                $payload['checkout_early'] = $earlyMinutes;
+            }
+        }
+
         // Update the attendance record
         $attendance->update($payload);
 
